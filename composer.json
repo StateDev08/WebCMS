@@ -22,9 +22,6 @@
         "spatie/laravel-medialibrary": "^11.17",
         "spatie/laravel-translatable": "^6.11"
     },
-    "conflict": {
-        "php": ">=8.3"
-    },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^4.0",
         "fakerphp/faker": "^1.23",
