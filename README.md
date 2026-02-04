@@ -1,66 +1,104 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Gaming CMS (Laravel 11)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Ein modulares CMS mit Forum-Frontend, oeffentlichem CMS-Frontend und Admin-Redaktion via Filament.
+Schwerpunkt: klassische CMS-Funktionen (Pages/Posts/Blocks, Menues, Rollen) plus Community/Forum.
 
-## About Laravel
+## Features
+- CMS: Pages, Posts, Blocks (Builder) mit SEO-Feldern
+- Menue-Builder (Drag & Drop im Admin)
+- Forum-Frontend + Admin (Filament)
+- Rollen/Rechte via Bouncer (u. a. `manage-pages`, `manage-posts`, `manage-menus`)
+- Oeffentliches CMS-Frontend unter `/cms/...`
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Voraussetzungen
+- PHP 8.2.x (getestet mit 8.2.12)
+- MySQL 8+ / MariaDB 10.11+
+- Composer 2.x
+- Node.js 18+ (Assets; empfohlen 20+)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installation (lokal)
+```
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan db:seed --class=DemoDataSeeder
+npm install
+npm run dev
+php artisan serve
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Demo-Login
+- Admin: `admin@gaming-cms.local` / `password`
 
-## Learning Laravel
+## Wichtige URLs
+### Admin
+- `http://localhost:8000/admin`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### CMS-Frontend
+- Startseite (Demo): `http://localhost:8000/cms/pages/home`
+- Beitraege: `http://localhost:8000/cms/posts`
+- Beitrag: `http://localhost:8000/cms/posts/{slug}`
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Forum
+- Start: `http://localhost:8000/`
+- Thread: `http://localhost:8000/threads/{id}`
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Content-Builder (Blocks)
+- `text`: einfacher Text
+- `image`: Bild (URL + Alt)
+- `button`: Button (Label, URL, Style)
+- `gallery`: mehrere Bilder
+- `columns`: 2-3 Textspalten
 
-## Laravel Sponsors
+## Rollen & Rechte (Auszug)
+- `manage-pages`, `manage-posts`, `manage-menus`
+- Rolle `editor` fuer Redaktion
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Plesk/Webhost (ohne install.sh)
+- Anleitung: `install.html`
 
-### Premium Partners
+## Plesk Installation (Kurzfassung)
+1. Projekt hochladen und entpacken.
+2. Document Root in Plesk auf `public` setzen.
+3. `.env` anlegen und DB-Daten eintragen.
+4. `composer install --no-dev --optimize-autoloader`
+5. `php artisan key:generate --force`
+6. `php artisan migrate --force`
+7. `php artisan storage:link`
+8. Caches: `php artisan config:cache` / `route:cache` / `view:cache`
+9. Assets bauen oder `public/build/` hochladen.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Apache (vHost) Beispiel
+```
+<VirtualHost *:80>
+    ServerName deine-domain.de
+    DocumentRoot "D:/pfad/zum/projekt/public"
 
-## Contributing
+    <Directory "D:/pfad/zum/projekt/public">
+        AllowOverride All
+        Require all granted
+    </Directory>
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    ErrorLog "logs/laravel_error.log"
+    CustomLog "logs/laravel_access.log" combined
+</VirtualHost>
+```
 
-## Code of Conduct
+## Apache Hinweise
+- `mod_rewrite` aktivieren
+- Document Root muss auf `public` zeigen
+- In `.env`: `APP_URL` setzen
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Hinweise zu PHP 8.2
+Falls Composer PHP 8.3+ fordert:
+1. `composer clear-cache`
+2. `composer update`
+3. Falls noetig: `vendor/` loeschen und `composer install`
 
-## Security Vulnerabilities
+## Entwicklung
+- Assets: `npm run dev` oder `npm run build`
+- Cache leeren: `php artisan optimize:clear`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Lizenz
+Proprietaer (projekt-spezifisch)
