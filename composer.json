@@ -20,7 +20,10 @@
         "silber/bouncer": "^1.0",
         "spatie/laravel-activitylog": "^4.11",
         "spatie/laravel-medialibrary": "^11.17",
-        "spatie/laravel-translatable": "^6.12"
+        "spatie/laravel-translatable": "^6.11"
+    },
+    "conflict": {
+        "php": ">=8.3"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^4.0",
@@ -88,6 +91,7 @@
             "block-insecure": false
         },
         "platform": {
+            "php": "8.2.12",
             "ext-zip": "1.0"
         }
     },

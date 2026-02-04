@@ -3,8 +3,9 @@
 @section('title', 'Thread bearbeiten')
 
 @section('content')
-    <div class="mb-6">
-        <h1 class="text-2xl font-semibold text-white">Thread bearbeiten</h1>
+    <div class="mb-8 rounded border border-slate-800/70 bg-slate-900/40 p-6">
+        <div class="text-sm uppercase tracking-widest text-emerald-400">Thread</div>
+        <h1 class="mt-2 text-3xl font-semibold text-white">Thread bearbeiten</h1>
     </div>
 
     @if ($errors->any())
@@ -17,7 +18,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('threads.update', $thread) }}" class="max-w-2xl space-y-4">
+    <form method="POST" action="{{ route('threads.update', $thread) }}" class="max-w-2xl space-y-4 rounded border border-slate-800/70 bg-slate-900/40 p-6">
         @csrf
         @method('PUT')
 

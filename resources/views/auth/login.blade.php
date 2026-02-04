@@ -3,8 +3,9 @@
 @section('title', 'Login')
 
 @section('content')
-    <div class="mx-auto max-w-md rounded border border-slate-800 bg-slate-900/40 p-6">
-        <h1 class="text-xl font-semibold text-white">Login</h1>
+    <div class="mx-auto max-w-md rounded border border-slate-800/70 bg-slate-900/40 p-6">
+        <div class="text-sm uppercase tracking-widest text-emerald-400">Account</div>
+        <h1 class="mt-2 text-2xl font-semibold text-white">Login</h1>
 
         @if ($errors->any())
             <div class="mt-4 rounded border border-rose-500/40 bg-rose-950/30 px-4 py-3 text-rose-200">

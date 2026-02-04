@@ -33,6 +33,7 @@
         <button type="button" class="rounded border border-slate-700 px-3 py-1 text-slate-200 hover:border-slate-500" data-format-toggle="bbcode">
             BBCode
         </button>
+        <span class="text-xs text-slate-500">Tipp: Strg+Enter zum Senden</span>
     </div>
 
     @if ($showTitle)

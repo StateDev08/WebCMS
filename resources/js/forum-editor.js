@@ -97,6 +97,13 @@ const initForumEditor = async () => {
         syncToTextarea();
     });
 
+    form.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+            syncToTextarea();
+            form.requestSubmit();
+        }
+    });
+
     setActiveFormat(activeFormat);
 };
 

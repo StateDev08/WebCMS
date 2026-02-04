@@ -3,7 +3,7 @@
 @section('title', $thread->title)
 
 @section('content')
-    <div class="mb-6">
+    <div class="mb-8 rounded border border-slate-800/70 bg-slate-900/40 p-6">
         <div class="text-sm text-slate-400">
             @if ($thread->game)
                 <a href="{{ route('games.show', $thread->game) }}" class="hover:text-white">
@@ -21,9 +21,22 @@
                 </a>
             @endif
         </div>
-        <h1 class="text-2xl font-semibold text-white">{{ $thread->title }}</h1>
-        <div class="mt-2 text-sm text-slate-400">
-            von {{ $thread->author?->name ?? 'Unbekannt' }} · {{ $thread->created_at->diffForHumans() }}
+        <h1 class="text-3xl font-semibold text-white">{{ $thread->title }}</h1>
+        <div class="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-400">
+            <span>von {{ $thread->author?->name ?? 'Unbekannt' }}</span>
+            <span>· {{ $thread->created_at->diffForHumans() }}</span>
+            <span class="rounded-full border border-slate-700 px-2 py-1 text-xs text-slate-300">
+                {{ $thread->posts_count }} Beiträge
+            </span>
+            <span class="rounded-full border border-slate-700 px-2 py-1 text-xs text-slate-400">
+                {{ $thread->views_count }} Views
+            </span>
+            @if ($thread->is_locked)
+                <span class="rounded-full border border-rose-600/50 px-2 py-1 text-xs text-rose-300">Gesperrt</span>
+            @endif
+            @if ($thread->is_sticky)
+                <span class="rounded-full border border-amber-500/50 px-2 py-1 text-xs text-amber-300">Sticky</span>
+            @endif
         </div>
         @auth
             @if ($thread->canEdit(auth()->user()))
@@ -45,7 +58,7 @@
 
     <div class="space-y-4">
         @forelse ($posts as $post)
-            <article class="rounded border border-slate-800 bg-slate-900/40 p-4">
+            <article class="rounded border border-slate-800/70 bg-slate-900/40 p-4">
                 <div class="flex items-center justify-between text-xs text-slate-400">
                     <span>{{ $post->author?->name ?? 'Unbekannt' }}</span>
                     <span>{{ $post->created_at->diffForHumans() }}</span>
@@ -75,7 +88,7 @@
         {{ $posts->links() }}
     </div>
 
-    <div class="mt-10">
+    <div class="mt-10 rounded border border-slate-800/70 bg-slate-900/40 p-6">
         <h2 class="mb-4 text-lg font-semibold text-white">Antwort schreiben</h2>
         @auth
             @include('forum.partials.post-form', ['thread' => $thread])

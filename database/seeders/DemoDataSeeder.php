@@ -9,6 +9,10 @@ use App\Models\User;
 use App\Models\ForumCategory;
 use App\Models\ForumThread;
 use App\Models\ForumPost;
+use App\Models\Menu;
+use App\Models\MenuItem;
+use App\Models\Page;
+use App\Models\Post;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -100,6 +104,59 @@ class DemoDataSeeder extends Seeder
                 'content_original' => 'Willkommen in unserer **Gaming Community**! Wir freuen uns, dass du hier bist.',
                 'content_format' => 'markdown',
                 'content_html' => '<p>Willkommen in unserer <strong>Gaming Community</strong>! Wir freuen uns, dass du hier bist.</p>',
+            ]);
+        }
+
+        // CMS Demo Content
+        $homePage = Page::firstOrCreate(
+            ['slug' => 'home'],
+            [
+                'title' => 'Startseite',
+                'status' => 'published',
+                'published_at' => now(),
+                'blocks' => [
+                    ['type' => 'text', 'data' => ['text' => 'Willkommen im Gaming CMS.']],
+                    ['type' => 'image', 'data' => ['url' => 'https://placehold.co/1200x400', 'alt' => 'Hero']],
+                ],
+            ]
+        );
+
+        $newsPost = Post::firstOrCreate(
+            ['slug' => 'erste-news'],
+            [
+                'title' => 'Erste News',
+                'excerpt' => 'Das ist der erste News-Beitrag.',
+                'status' => 'published',
+                'published_at' => now(),
+                'blocks' => [
+                    ['type' => 'text', 'data' => ['text' => 'Hier steht der Inhalt des Beitrags.']],
+                ],
+            ]
+        );
+
+        $menu = Menu::firstOrCreate(
+            ['slug' => 'main'],
+            ['name' => 'Hauptmenü']
+        );
+
+        if ($menu->items()->count() === 0) {
+            MenuItem::create([
+                'menu_id' => $menu->id,
+                'label' => 'Startseite',
+                'url' => '/cms',
+                'sort_order' => 1,
+            ]);
+            MenuItem::create([
+                'menu_id' => $menu->id,
+                'label' => 'Beiträge',
+                'url' => '/cms/posts',
+                'sort_order' => 2,
+            ]);
+            MenuItem::create([
+                'menu_id' => $menu->id,
+                'label' => 'Forum',
+                'url' => '/',
+                'sort_order' => 3,
             ]);
         }
 

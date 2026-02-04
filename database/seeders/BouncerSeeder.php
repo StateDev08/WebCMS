@@ -50,6 +50,11 @@ class BouncerSeeder extends Seeder
             'view-admin-panel' => 'Admin-Panel zugreifen',
             'view-telescope' => 'Telescope anzeigen',
             
+            // CMS
+            'manage-pages' => 'Seiten verwalten',
+            'manage-posts' => 'Beiträge verwalten',
+            'manage-menus' => 'Menüs verwalten',
+            
             // Reports
             'view-reports' => 'Reports anzeigen',
             'manage-reports' => 'Reports bearbeiten',
@@ -88,6 +93,9 @@ class BouncerSeeder extends Seeder
             'manage-users',
             'view-users',
             'manage-themes',
+            'manage-pages',
+            'manage-posts',
+            'manage-menus',
             'view-admin-panel',
             'view-telescope',
             'view-reports',
@@ -151,7 +159,18 @@ class BouncerSeeder extends Seeder
             'delete-own-posts',
         ]);
 
-        $this->command->info('✓ 6 Roles erstellt');
+        // Editor Role (CMS Redaktion)
+        $editor = Bouncer::role()->firstOrCreate(
+            ['name' => 'editor'],
+            ['title' => 'Editor']
+        );
+        Bouncer::allow($editor)->to([
+            'manage-pages',
+            'manage-posts',
+            'view-admin-panel',
+        ]);
+
+        $this->command->info('✓ 7 Roles erstellt');
 
         // Weise Admin User die Super Admin Rolle zu
         $adminUser = User::where('email', 'admin@gaming-cms.local')->first();

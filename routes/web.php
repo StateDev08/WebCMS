@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Cms\PageController;
+use App\Http\Controllers\Cms\PostController;
 use App\Http\Controllers\Forum\CategoryController;
 use App\Http\Controllers\Forum\CommunityController;
 use App\Http\Controllers\Forum\GameController;
@@ -47,3 +49,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
+
+Route::get('/cms/posts', [PostController::class, 'index'])->name('cms.posts.index');
+Route::get('/cms/posts/{slug}', [PostController::class, 'show'])->name('cms.posts.show');
+Route::get('/cms/pages/{slug}', [PageController::class, 'show'])->name('cms.pages.show');
