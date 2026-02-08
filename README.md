@@ -1,112 +1,109 @@
-# Gaming CMS (Laravel 11)
+# Laravel CMS
 
-Ein modulares CMS mit Forum-Frontend, oeffentlichem CMS-Frontend und Admin-Redaktion via Filament.
-Schwerpunkt: klassische CMS-Funktionen (Pages/Posts/Blocks, Menues, Rollen) plus Community/Forum.
+## Setup (lokal)
+- `composer install`
+- `.env` erstellen (`.env.example` kopieren) und `APP_KEY` setzen (`php artisan key:generate`)
+- Datenbank konfigurieren (SQLite/SQL) und `php artisan migrate --seed`
+- `php artisan storage:link`
+- `npm install && npm run build`
+- Start: `php artisan serve`
 
-## Features
-- CMS: Pages, Posts, Blocks (Builder) mit SEO-Feldern
-- Menue-Builder (Drag & Drop im Admin)
-- Forum-Frontend + Admin (Filament)
-- Rollen/Rechte via Bouncer (u. a. `manage-pages`, `manage-posts`, `manage-menus`)
-- Oeffentliches CMS-Frontend unter `/cms/...`
+## Demo-Daten
+- Seeder für Inhalte/Module: `php artisan db:seed --class=DemoContentSeeder`
+- Enthält Beispiel-Seiten, Posts, Forum, Formulare, Game-Daten, Serverstatus, Profile, Gruppen und Kommentare.
 
-## Voraussetzungen
-- PHP 8.2.x (getestet mit 8.2.12)
-- MySQL 8+ / MariaDB 10.11+
-- Composer 2.x
-- Node.js 18+ (Assets; empfohlen 20+)
+## Standard-Zugang
+- Benutzer: `admin@example.com`
+- Passwort: `password`
+- Rolle: Administrator
+- API-Token wird beim Seeding erzeugt (siehe `users.api_token`)
 
-## Installation
-### A) Plesk Laravel Toolkit (empfohlen)
-1. Plesk → Websites & Domains → Laravel (Toolkit)
-2. App hinzufügen / Projektordner wählen
-3. Document Root = `public`
-4. Composer Dependencies installieren (`--no-dev --optimize-autoloader`)
-5. `.env` bearbeiten (APP_ENV=production, APP_DEBUG=false, DB-Daten)
-6. APP_KEY generieren
-7. Migrationen ausführen (`--force`)
-8. Storage Link erstellen
-9. Optional: `npm install` + `npm run build` (oder lokal bauen und `public/build/` hochladen)
+## Deployment (Plesk / IIS / Apache / Nginx)
+Allgemein:
+- Webroot muss auf `public/` zeigen.
+- `.env` auf Produktionswerte setzen (DB, APP_URL, APP_KEY).
+- `php artisan migrate --force`
+- `php artisan storage:link`
+- Cache warmmachen: `php artisan config:cache && php artisan route:cache`
 
-### B) Plesk ohne Terminal
-1. Lokal vorbereiten:
-   - `composer install --no-dev --optimize-autoloader`
-   - `npm install` + `npm run build`
-2. Projekt komplett hochladen (inkl. `vendor/` und `public/build/`).
-3. Document Root auf `public` setzen.
-4. `.env` anlegen, `APP_KEY` lokal generieren und hochladen.
-5. Migrationen lokal gegen die Server-DB ausführen (Remote DB Zugriff erforderlich).
-6. Storage Link falls möglich; sonst `public/storage` manuell anlegen.
+### Plesk
+- Domain/Dokumentenstamm auf `public/` setzen.
+- PHP 8.2+ aktivieren.
+- Aufgaben: `php artisan migrate --force`, `php artisan storage:link`.
 
-### C) Lokale Entwicklung
+### IIS (Windows)
+- Datei `public/web.config` ist enthalten.
+- URL Rewrite Module installieren.
+- Webroot auf `public/` setzen.
+- `APP_KEY` und Datenbank korrekt setzen.
+
+### Apache
+- `.htaccess` in `public/` vorhanden.
+- `AllowOverride All` für die vHost/Directory-Regel aktivieren.
+
+### Nginx (Beispiel)
 ```
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate
-php artisan db:seed --class=DemoDataSeeder
-npm install
-npm run dev
-php artisan serve
-```
+server {
+    listen 80;
+    server_name example.com;
+    root /var/www/cms/public;
 
-## Demo-Login
-- Admin: `admin@gaming-cms.local` / `password`
+    index index.php index.html;
 
-## Wichtige URLs
-### Admin
-- `http://localhost:8000/admin`
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
 
-### CMS-Frontend
-- Startseite (Demo): `http://localhost:8000/cms/pages/home`
-- Beitraege: `http://localhost:8000/cms/posts`
-- Beitrag: `http://localhost:8000/cms/posts/{slug}`
-
-### Forum
-- Start: `http://localhost:8000/`
-- Thread: `http://localhost:8000/threads/{id}`
-
-## Content-Builder (Blocks)
-- `text`: einfacher Text
-- `image`: Bild (URL + Alt)
-- `button`: Button (Label, URL, Style)
-- `gallery`: mehrere Bilder
-- `columns`: 2-3 Textspalten
-
-## Rollen & Rechte (Auszug)
-- `manage-pages`, `manage-posts`, `manage-menus`
-- Rolle `editor` fuer Redaktion
-
-## Apache (vHost) Beispiel
-```
-<VirtualHost *:80>
-    ServerName deine-domain.de
-    DocumentRoot "D:/pfad/zum/projekt/public"
-
-    <Directory "D:/pfad/zum/projekt/public">
-        AllowOverride All
-        Require all granted
-    </Directory>
-
-    ErrorLog "logs/laravel_error.log"
-    CustomLog "logs/laravel_access.log" combined
-</VirtualHost>
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+}
 ```
 
-## Apache Hinweise
-- `mod_rewrite` aktivieren
-- Document Root muss auf `public` zeigen
-- In `.env`: `APP_URL` setzen
+## Headless API
+- Endpunkte: `GET /api/pages`, `GET /api/pages/{slug}`, `GET /api/posts`, `GET /api/posts/{slug}`
+- Auth: `Authorization: Bearer <api_token>` oder Query `?api_token=...`
 
-## Hinweise zu PHP 8.2
-Falls Composer PHP 8.3+ fordert:
-1. `composer clear-cache`
-2. `composer update`
-3. Falls noetig: `vendor/` loeschen und `composer install`
+## Frontend-Routen (Auszug)
+- Startseite: `/`
+- Seiten: `/pages/{slug}`
+- Beiträge: `/posts`, `/posts/{slug}`
+- Forum: `/forums`, `/forums/{forum}`, `/forums/{forum}/threads/{thread}`
+- Medien: `/media`
+- Formulare: `/forms`, `/forms/{slug}`
+- Suche: `/search`
+- Serverstatus: `/serverstatus`, `/serverstatus/{server}`
+- Game: `/game/stats`, `/game/guilds`, `/game/events`, `/game/market`, `/game/matches`
+- Profile: `/profiles`, `/profiles/{profile}`
+- Gruppen: `/groups`, `/groups/{group}`
+- API Docs: `/api-docs`
+- Themes/Plugins: `/themes`, `/plugins`
 
-## Entwicklung
-- Assets: `npm run dev` oder `npm run build`
-- Cache leeren: `php artisan optimize:clear`
+## Module (Backend)
+- Core: Seiten, Beiträge, Medien, Rollen/Rechte, Benutzer
+- Community: Forum (Threads/Posts), Kommentare, Gruppen, Profile, Nachrichten
+- Game: Serverstatus, Player-Stats, Gilden, Events, Marktplatz, Matches
+- System: Themes, Plugins, Integrationen, Aktivitätslog
+- Form Builder: Formulare, Felder, Submissions
 
-## Lizenz
-Proprietaer (projekt-spezifisch)
+## Themes & Darkmode
+- Alle Themes (inkl. Default) sind Darkmode.
+- Gaming-Themes: `neon`, `dark`, `fantasy`, `scifi`, `retro`
+- Aktiviertes Theme wird serverseitig geladen und im Frontend per `data-theme` gesetzt.
+
+## Analytics
+- `CMS_ANALYTICS_PROVIDER=ga4` und `CMS_ANALYTICS_ID=G-XXXX` für GA4
+- `CMS_ANALYTICS_PROVIDER=matomo` und `CMS_ANALYTICS_ID=https://matomo.example.com` für Matomo
+
+## Social Login
+- Google: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`
+- GitHub: `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_REDIRECT_URI`
+
+## Troubleshooting
+- Bilder fehlen: `php artisan storage:link` ausführen.
+- Migrationen fehlen: `php artisan migrate --seed`
+- Theme/CSS nicht sichtbar: `npm run build` und Cache leeren (`php artisan config:clear`)
+#
